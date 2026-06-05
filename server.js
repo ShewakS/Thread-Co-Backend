@@ -9,7 +9,11 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+const allowedOrigins = (process.env.CORS_ORIGIN || "").split(",").map(o => o.trim()).filter(Boolean);
+app.use(cors({
+    origin: (origin, cb) => (!origin || allowedOrigins.includes(origin) ? cb(null, true) : cb(new Error("Not allowed by CORS"))),
+    credentials: true
+}));
 
 // Health check route
 app.get("/", (req, res) => {
@@ -84,31 +88,31 @@ const seedDatabase = async () => {
                 phone: "9876543210",
                 addresses: []
             }).save();
-            console.log("✓ Admin user seeded (email: admin@threadco.com, password: admin123)");
+            console.log(" Admin user seeded (email: admin@threadco.com, password: admin123)");
         }
 
         // Seed Products
         const productCount = await Product.countDocuments();
         if (productCount === 0) {
             await Product.insertMany(DEFAULT_PRODUCTS);
-            console.log(`✓ ${DEFAULT_PRODUCTS.length} products seeded`);
+            console.log(` ${DEFAULT_PRODUCTS.length} products seeded`);
         }
 
         // Seed Orders
         const orderCount = await Order.countDocuments();
         if (orderCount === 0) {
             await Order.insertMany(DEFAULT_ORDERS);
-            console.log(`✓ ${DEFAULT_ORDERS.length} orders seeded`);
+            console.log(` ${DEFAULT_ORDERS.length} orders seeded`);
         }
 
         // Seed Offers
         const offerCount = await Offer.countDocuments();
         if (offerCount === 0) {
             await Offer.insertMany(DEFAULT_OFFERS);
-            console.log(`✓ ${DEFAULT_OFFERS.length} offers seeded`);
+            console.log(` ${DEFAULT_OFFERS.length} offers seeded`);
         }
     } catch (err) {
-        console.error("✗ Error seeding database:", err.message);
+        console.error(" Error seeding database:", err.message);
     }
 };
 
@@ -120,12 +124,12 @@ mongoose.connect(process.env.MONGO_URL)
         
         // Start server after DB connection
         app.listen(PORT, () => {
-            console.log(`\n✓ Server running on port ${PORT}`);
-            console.log(`✓ API URL: http://localhost:${PORT}`);
+            console.log(`\n Server running on port ${PORT}`);
+            console.log(`API URL: ${process.env.BACKEND_URL || `http://localhost:${PORT}`}`);
             console.log("\n=== ThreadCo Backend Ready ===");
         });
     })
     .catch((err) => { 
-        console.error("\n✗ MongoDB connection failed:", err.message); 
+        console.error("\n MongoDB connection failed:", err.message); 
         process.exit(1);
     });
