@@ -1,4 +1,5 @@
 const User = require("../Models/UserModel");
+const Wishlist = require("../Models/WishlistModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -159,6 +160,12 @@ const syncUserCartAndWishlist = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "User not found." });
         }
+        await Wishlist.findOneAndUpdate(
+            { userEmail: normalizedEmail },
+            { $set: { items: Array.isArray(wishlist) ? wishlist : [] } },
+            { upsert: true }
+        );
+
         res.status(200).json({
             message: "Cart and wishlist synced successfully",
             data: user

@@ -9,6 +9,9 @@ const OrderSchema = new mongoose.Schema({
     date: { type: String, required: true },
     address: { type: String, default: "" },
     paymentMethod: { type: String, default: "Cash on Delivery" },
+    paymentId: { type: mongoose.Schema.Types.ObjectId, ref: "Payment", default: null },
+    paymentStatus: { type: String, default: "Pending" },
+    razorpayPaymentId: { type: String, default: "" },
     items: [
         {
             id: { type: String, required: true },

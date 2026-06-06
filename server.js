@@ -13,7 +13,7 @@ const MONGO_CONNECTION_STRING =
     process.env.MONGO_URL;
 
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 const allowedOrigins = (process.env.CORS_ORIGIN || "").split(",").map(o => o.trim()).filter(Boolean);
 app.use(cors({
     origin: allowedOrigins.length > 0 ? allowedOrigins : "*",
@@ -37,6 +37,15 @@ app.use("/api/orders", orderroutes);
 
 const offerroutes = require("./Routers/OfferRoute");
 app.use("/api/offers", offerroutes);
+
+const paymentroutes = require("./Routers/PaymentRoute");
+app.use("/api/payments", paymentroutes);
+
+const wishlistroutes = require("./Routers/WishlistRoute");
+app.use("/api/wishlist", wishlistroutes);
+
+const reviewroutes = require("./Routers/ReviewRoute");
+app.use("/api/reviews", reviewroutes);
 
 // Error handling middleware
 const { errorHandler, notFound } = require("./Utils/errorHandler");

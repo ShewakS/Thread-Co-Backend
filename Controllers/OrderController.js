@@ -30,7 +30,7 @@ const getOrderById = async (req, res) => {
 
 const placeOrder = async (req, res) => {
     try {
-        const { customer, email, total, address, paymentMethod, items } = req.body;
+        const { customer, email, total, address, paymentMethod, paymentId, paymentStatus, razorpayPaymentId, items } = req.body;
         
         if (!customer || !email || !total || !items || items.length === 0) {
             return res.status(400).json({ message: "Required order fields missing" });
@@ -61,6 +61,9 @@ const placeOrder = async (req, res) => {
             date: new Date().toISOString().split('T')[0],
             address: address || "No Address Provided",
             paymentMethod: paymentMethod || "Cash on Delivery",
+            paymentId: paymentId || null,
+            paymentStatus: paymentStatus || (paymentMethod === "Cash on Delivery" ? "Pending" : "Paid"),
+            razorpayPaymentId: razorpayPaymentId || "",
             items
         });
         
