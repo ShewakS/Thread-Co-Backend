@@ -10,6 +10,9 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(express.json());
 const allowedOrigins = (process.env.CORS_ORIGIN || "").split(",").map(o => o.trim()).filter(Boolean);
+if (allowedOrigins.length === 0) {
+    console.warn("⚠️ Warning: CORS_ORIGIN is not set. All cross-origin requests might fail.");
+}
 app.use(cors({
     origin: (origin, cb) => (!origin || allowedOrigins.includes(origin) ? cb(null, true) : cb(new Error("Not allowed by CORS"))),
     credentials: true
@@ -117,6 +120,11 @@ const seedDatabase = async () => {
 };
 
 // Connect to MongoDB
+if (!process.env.MONGO_URL) {
+    console.error("❌ Critical: MONGO_URL environment variable is missing.");
+    process.exit(1);
+}
+
 mongoose.connect(process.env.MONGO_URL)
     .then(async () => { 
         console.log("\n✓ Connected to MongoDB successfully"); 
