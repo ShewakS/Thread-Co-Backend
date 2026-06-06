@@ -1,20 +1,22 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const dns = require("dns");
 require("dotenv").config();
 const cors = require("cors");
 
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
+
 const app = express();
 const PORT = process.env.PORT || 5000;
+const MONGO_CONNECTION_STRING =
+    process.env.MONGO_URL;
 
 // Middleware
 app.use(express.json());
 const allowedOrigins = (process.env.CORS_ORIGIN || "").split(",").map(o => o.trim()).filter(Boolean);
-if (allowedOrigins.length === 0) {
-    console.warn("⚠️ Warning: CORS_ORIGIN is not set. All cross-origin requests might fail.");
-}
 app.use(cors({
-    origin: (origin, cb) => (!origin || allowedOrigins.includes(origin) ? cb(null, true) : cb(new Error("Not allowed by CORS"))),
+    origin: allowedOrigins.length > 0 ? allowedOrigins : "*",
     credentials: true
 }));
 
@@ -120,12 +122,7 @@ const seedDatabase = async () => {
 };
 
 // Connect to MongoDB
-if (!process.env.MONGO_URL) {
-    console.error("❌ Critical: MONGO_URL environment variable is missing.");
-    process.exit(1);
-}
-
-mongoose.connect(process.env.MONGO_URL)
+mongoose.connect(MONGO_CONNECTION_STRING, { serverSelectionTimeoutMS: 5000 })
     .then(async () => { 
         console.log("\n✓ Connected to MongoDB successfully"); 
         await seedDatabase();
@@ -139,5 +136,6 @@ mongoose.connect(process.env.MONGO_URL)
     })
     .catch((err) => { 
         console.error("\n MongoDB connection failed:", err.message); 
+        console.error("Set MONGO_URL in backend/.env to your MongoDB Atlas URI, or start a local MongoDB server for mongodb://127.0.0.1:27017/threadco.");
         process.exit(1);
     });
