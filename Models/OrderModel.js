@@ -12,6 +12,10 @@ const OrderSchema = new mongoose.Schema({
     paymentId: { type: mongoose.Schema.Types.ObjectId, ref: "Payment", default: null },
     paymentStatus: { type: String, default: "Pending" },
     razorpayPaymentId: { type: String, default: "" },
+    shippingMethod: { type: String, default: "standard" },
+    shippingAmount: { type: Number, default: 0 },
+    promoCode: { type: String, default: "" },
+    discount: { type: Number, default: 0 },
     items: [
         {
             id: { type: String, required: true },
@@ -19,7 +23,8 @@ const OrderSchema = new mongoose.Schema({
             price: { type: Number, required: true },
             quantity: { type: Number, required: true },
             size: { type: String, default: "M" },
-            color: { type: String, default: "Standard" }
+            color: { type: String, default: "Standard" },
+            image: { type: String, default: "" }
         }
     ]
 });

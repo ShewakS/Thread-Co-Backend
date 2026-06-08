@@ -47,6 +47,12 @@ app.use("/api/wishlist", wishlistroutes);
 const reviewroutes = require("./Routers/ReviewRoute");
 app.use("/api/reviews", reviewroutes);
 
+const contactroutes = require("./Routers/ContactRoute");
+app.use("/api/contact", contactroutes);
+
+const passwordresetroutes = require("./Routers/PasswordResetRoute");
+app.use("/api/password-reset", passwordresetroutes);
+
 // Error handling middleware
 const { errorHandler, notFound } = require("./Utils/errorHandler");
 app.use(notFound);

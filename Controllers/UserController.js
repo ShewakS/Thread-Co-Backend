@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 
 const signupUser = async (req, res) => {
     try {
-        let { firstname, lastname, name, email, phone, password } = req.body;
+        let { firstname, lastname, name, email, phone, password, acceptedPolicies } = req.body;
         
         if (!firstname && name) {
             const parts = name.trim().split(/\s+/);
@@ -15,6 +15,10 @@ const signupUser = async (req, res) => {
         
         if (!firstname || !email || !password) {
             return res.status(400).json({ message: "Required fields missing" });
+        }
+
+        if (acceptedPolicies !== true) {
+            return res.status(400).json({ message: "Please accept the Terms & Conditions and Privacy Policy." });
         }
         
         const normalizedEmail = String(email).trim().toLowerCase();
@@ -31,6 +35,8 @@ const signupUser = async (req, res) => {
             email: normalizedEmail,
             phone: phone || "",
             password: hashedPassword,
+            acceptedPolicies: true,
+            acceptedPoliciesAt: new Date(),
         });
         const SavedUser = await NewUser.save();
         

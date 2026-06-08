@@ -7,6 +7,8 @@ const UserSchema = new mongoose.Schema({
     phone: { type: String, default: "" },
     password: { type: String, required: true },
     role: { type: String, default: "customer" },
+    acceptedPolicies: { type: Boolean, default: false },
+    acceptedPoliciesAt: { type: Date, default: null },
     addresses: { type: [String], default: [] },
     cart: { type: Array, default: [] },
     wishlist: { type: Array, default: [] }
